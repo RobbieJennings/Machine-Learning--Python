@@ -23,7 +23,11 @@ train_data = train_data.rename(columns={'Income in EUR': 'Income'})
 # Perform local testing using only train data
 if(test):
     train_data, test_data = train_test_split(train_data, test_size=0.2)
-    incomes = test_data["Income"]
+
+# Drop unnecessary columns
+unnecessary = ["Instance"]
+train_data = train_data.drop(unnecessary, axis=1)
+test_data = test_data.drop(unnecessary, axis=1)
 
 # Remove outliers from training data
 train_data = remove_outliers(train_data)
@@ -33,8 +37,8 @@ test_data = quantify_data(test_data, train_data)
 train_data = quantify_data(train_data, train_data)
 
 # Split the data into training/testing sets
-train_x = train_data.drop(["Income", "Instance"], axis=1)
-test_x = test_data.drop(["Income", "Instance"], axis=1)
+train_x = train_data.drop(["Income"], axis=1)
+test_x = test_data.drop(["Income"], axis=1)
 
 # Split the targets into training/testing sets
 train_y = train_data["Income"]
@@ -68,7 +72,7 @@ if not test:
 
 # Check results
 if test:
-    incomes = incomes.tolist()
+    incomes = test_y.tolist()
     results = pred_y.tolist()
     rms = sqrt(mean_squared_error(incomes, results))
     print(rms)

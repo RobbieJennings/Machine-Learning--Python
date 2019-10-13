@@ -3,140 +3,135 @@ import pandas as pd
 from scipy import stats
 
 
-# Replace unkowns in Year of Record with mean and convert to age of record
-def quantify_year(data, train_data):
-    data["Year of Record"] = data["Year of Record"].fillna(
-        int(data["Year of Record"].mean()))
-    data["Year of Record"] = (data["Year of Record"] - 2018) * -1
-    return data
+def remove_outliers(data):
+    # Drop unkonws and outliers beyond 3 standard deviations from Income
+    if "Income" in data.columns:
+        data = data.dropna(subset=["Income"])
+        data = data[np.abs(stats.zscore(data["Income"]) < 3)]
 
+    # Drop unkonws and outliers beyond 3 standard deviations from Year
+    if "Year of Record" in data.columns:
+        data = data.dropna(subset=["Year of Record"])
+        data = data[np.abs(stats.zscore(data["Year of Record"]) < 3)]
 
-# Replace Gender with One Hot Encoding
-def quantify_gender(data, train_data):
-    allowed_values = ["male", "female", "other"]
-    data.loc[~data["Gender"].isin(allowed_values), "Gender"] = "None"
-    data["Gender"] = data["Gender"].replace({"None": None})
-    data = pd.concat([data.drop("Gender", axis=1),
-                      pd.get_dummies(data[["Gender"]])], axis=1)
-    return data
+    # Drop unkonws and outliers beyond 3 standard deviations from Gender
+    if "Gender" in data.columns:
+        data = data.dropna(subset=["Gender"])
+        data = data = data[data["Gender"].isin(["male", "female", "other"])]
 
+    # Drop unkonws and outliers beyond 3 standard deviations from Age
+    if "Age" in data.columns:
+        data = data.dropna(subset=["Age"])
+        data = data[np.abs(stats.zscore(data["Age"]) < 3)]
 
-# Replace unkonws in Age with mean
-def quantify_age(data, train_data):
-    data["Age"] = data["Age"].fillna(int((data["Age"].mean())))
-    return data
+    # Drop unkonws from Country
+    if "Country" in data.columns:
+        data = data.dropna(subset=["Country"])
 
+    # Drop unkonws and outliers beyond 3 standard deviations from Size of City
+    if "Size of City" in data.columns:
+        data = data.dropna(subset=["Size of City"])
+        data = data[np.abs(stats.zscore(data["Size of City"]) < 3)]
 
-# Replace Country with One Hot Encoding
-def quantify_country(data, train_data):
-    data["Country"] = data["Country"].fillna("None")
-    allowed_values = train_data["Country"].unique()
-    data.loc[~data["Country"].isin(allowed_values), "Country"] = "None"
-    data["Country"] = data["Country"].replace({"None": None})
-    data = pd.concat([data.drop("Country", axis=1),
-                      pd.get_dummies(data[["Country"]])], axis=1)
-    return data
+    # Drop unkonws from Profession
+    if "Profession" in data.columns:
+        data = data.dropna(subset=["Profession"])
 
+    # Drop unkonws from University Degree
+    if "University Degree" in data.columns:
+        data = data.dropna(subset=["University Degree"])
 
-# Replace unkowns in Size of City with mean
-def quantify_size(data, train_data):
-    data["Size of City"] = data["Size of City"].fillna(
-        int((data["Size of City"].mean())))
-    return data
+    # Drop unkonws from Wears Glasses
+    if "Wears Glasses" in data.columns:
+        data = data.dropna(subset=["Wears Glasses"])
+        data = data[data["Wears Glasses"].isin([1, 0])]
 
+    # Drop unkonws from Hair Color
+    if "Hair Color" in data.columns:
+        data = data.dropna(subset=["Hair Color"])
+        data = data = data[data["Hair Color"].isin(
+            ["Black", "Brown", "Blond", "Red"])]
 
-# Replace Profession with One Hot Encoding
-def quantify_profession(data, train_data):
-    allowed_values = train_data["Profession"].unique()
-    data.loc[~data["Profession"].isin(allowed_values), "Profession"] = "None"
-    data["Profession"] = data["Profession"].replace({"None": None})
-    data = pd.concat([data.drop("Profession", axis=1),
-                      pd.get_dummies(data[["Profession"]])], axis=1)
-    return data
+    # Drop unkonws and outliers beyond 3 standard deviations from Body Height
+    if "Body Height [cm]" in data.columns:
+        data = data.dropna(subset=["Body Height [cm]"])
+        data = data[np.abs(stats.zscore(data["Body Height [cm]"]) < 3)]
 
-
-# Rank PhD, Master, Bachelor and no degree respectively
-def quantify_degree(data, train_data):
-    data["University Degree"] = data["University Degree"].replace(
-        {"PhD": 3,
-         "Master": 2,
-         "Bachelor": 1})
-    allowed_values = ["PhD", "Master", "Bachelor"]
-    data.loc[~data["University Degree"].isin(
-        allowed_values), "University Degree"] = "None"
-    data["University Degree"] = data["University Degree"].replace({"None": 0})
-    return data
-
-
-# Replace unkowns in Wears Glasses with mean
-def quantify_glasses(data, train_data):
-    data["Wears Glasses"] = data["Wears Glasses"].fillna(
-        (data["Wears Glasses"].mean()))
-    return data
-
-
-# Replace Hair Color with One Hot Encoding
-def quantify_hair(data, train_data):
-    data["Hair Color"] = data["Hair Color"].fillna("None")
-    allowed_values = train_data["Hair Color"].unique()
-    data.loc[~data["Hair Color"].isin(allowed_values), "Hair Color"] = "None"
-    data["Hair Color"] = data["Hair Color"].replace({"None": None})
-    data = pd.concat([data.drop("Hair Color", axis=1),
-                      pd.get_dummies(data[["Hair Color"]])], axis=1)
-    return data
-
-
-# Replace unkowns in Body Height with mean
-def quantify_height(data, train_data):
-    data["Body Height [cm]"] = data["Body Height [cm]"].fillna(
-        (int(data["Body Height [cm]"].mean())))
     return data
 
 
 def quantify_data(data, train_data):
-    data = quantify_year(data, train_data)
-    data = quantify_gender(data, train_data)
-    data = quantify_age(data, train_data)
-    data = quantify_country(data, train_data)
-    data = quantify_size(data, train_data)
-    data = quantify_profession(data, train_data)
-    data = quantify_degree(data, train_data)
-    data = quantify_glasses(data, train_data)
-    data = quantify_hair(data, train_data)
-    data = quantify_height(data, train_data)
-    return data
+    # Replace unkowns in Year of Record with mean and convert to age of record
+    if "Year of Record" in data.columns:
+        data["Year of Record"] = data["Year of Record"].fillna(
+            int(data["Year of Record"].mean()))
+        data["Year of Record"] = (data["Year of Record"] - 2018) * -1
 
+    # Replace Gender with One Hot Encoding
+    if "Gender" in data.columns:
+        allowed_values = ["male", "female", "other"]
+        data.loc[~data["Gender"].isin(allowed_values), "Gender"] = "None"
+        data["Gender"] = data["Gender"].replace({"None": None})
+        data = pd.concat([data.drop("Gender", axis=1),
+                          pd.get_dummies(data[["Gender"]])], axis=1)
 
-# Remove outliers using standard deviation
-def remove_outliers(data):
-    data = data.dropna(subset=["Income"])
-    data = data[np.abs(stats.zscore(data["Income"]) < 3)]
+    # Replace unkonws in Age with mean
+    if "Age" in data.columns:
+        data["Age"] = data["Age"].fillna(int((data["Age"].mean())))
 
-    data = data.dropna(subset=["Year of Record"])
-    data = data[np.abs(stats.zscore(data["Year of Record"]) < 3)]
+    # Replace Country with One Hot Encoding
+    if "Country" in data.columns:
+        data["Country"] = data["Country"].fillna("None")
+        allowed_values = train_data["Country"].unique()
+        data.loc[~data["Country"].isin(allowed_values), "Country"] = "None"
+        data["Country"] = data["Country"].replace({"None": None})
+        data = pd.concat([data.drop("Country", axis=1),
+                          pd.get_dummies(data[["Country"]])], axis=1)
 
-    data = data.dropna(subset=["Gender"])
-    data = data = data[data["Gender"].isin(["male", "female", "other"])]
+    # Replace unkowns in Size of City with mean
+    if "Size of City" in data.columns:
+        data["Size of City"] = data["Size of City"].fillna(
+            int((data["Size of City"].mean())))
 
-    data = data.dropna(subset=["Age"])
-    data = data[np.abs(stats.zscore(data["Age"]) < 3)]
+    # Replace Profession with One Hot Encoding
+    if "Profession" in data.columns:
+        allowed_values = train_data["Profession"].unique()
+        data.loc[~data["Profession"].isin(
+            allowed_values), "Profession"] = "None"
+        data["Profession"] = data["Profession"].replace({"None": None})
+        data = pd.concat([data.drop("Profession", axis=1),
+                          pd.get_dummies(data[["Profession"]])], axis=1)
 
-    data = data.dropna(subset=["Country"])
+    # Rank PhD, Master, Bachelor and no degree respectively
+    if "University Degree" in data.columns:
+        data["University Degree"] = data["University Degree"].replace(
+            {"PhD": 3,
+             "Master": 2,
+             "Bachelor": 1})
+        allowed_values = ["PhD", "Master", "Bachelor"]
+        data.loc[~data["University Degree"].isin(
+            allowed_values), "University Degree"] = "None"
+        data["University Degree"] = data["University Degree"].replace(
+            {"None": 0})
 
-    data = data.dropna(subset=["Size of City"])
-    data = data[np.abs(stats.zscore(data["Size of City"]) < 3)]
+    # Replace unkowns in Wears Glasses with mean
+    if "Wears Glasses" in data.columns:
+        data["Wears Glasses"] = data["Wears Glasses"].fillna(
+            data["Wears Glasses"].mean())
 
-    data = data.dropna(subset=["Profession"])
+    # Replace Hair Color with One Hot Encoding
+    if "Hair Color" in data.columns:
+        data["Hair Color"] = data["Hair Color"].fillna("None")
+        allowed_values = train_data["Hair Color"].unique()
+        data.loc[~data["Hair Color"].isin(
+            allowed_values), "Hair Color"] = "None"
+        data["Hair Color"] = data["Hair Color"].replace({"None": None})
+        data = pd.concat([data.drop("Hair Color", axis=1),
+                          pd.get_dummies(data[["Hair Color"]])], axis=1)
 
-    data = data.dropna(subset=["University Degree"])
+    # Replace unkowns in Body Height with mean
+    if "Body Height [cm]" in data.columns:
+        data["Body Height [cm]"] = data["Body Height [cm]"].fillna(
+            int(data["Body Height [cm]"].mean()))
 
-    data = data.dropna(subset=["Wears Glasses"])
-    data = data[data["Wears Glasses"].isin([1, 0])]
-
-    data = data.dropna(subset=["Hair Color"])
-    data = data = data[data["Hair Color"].isin(
-        ["Black", "Brown", "Blond", "Red"])]
-
-    data = data.dropna(subset=["Body Height [cm]"])
-    data = data[np.abs(stats.zscore(data["Body Height [cm]"]) < 3)]
     return data
