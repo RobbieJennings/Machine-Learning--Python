@@ -10,7 +10,7 @@ from preprocessing import standardize_data
 from preprocessing import normalize_data
 
 # Set to True to enable local testing
-test = True
+test = False
 
 # Load the filenames
 train_input = "tcd ml 2019-20 income prediction training (with labels).csv"
@@ -62,7 +62,7 @@ train_x = normalize_data(train_x)
 test_x = normalize_data(test_x)
 
 # Create linear regression object
-regr = linear_model.BayesianRidge()
+regr = linear_model.Lasso(alpha=0.1)
 
 # Train the model using the training sets
 regr.fit(train_x, train_y)

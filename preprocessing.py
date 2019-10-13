@@ -6,55 +6,55 @@ from sklearn.preprocessing import Normalizer
 
 
 def remove_outliers(data):
-    # Drop unkonws and outliers beyond 3 standard deviations from Income
+    # Drop unknowns and outliers beyond 3 standard deviations from Income
     if "Income" in data.columns:
         data = data.dropna(subset=["Income"])
         data = data[np.abs(stats.zscore(data["Income"]) < 3)]
 
-    # Drop unkonws and outliers beyond 3 standard deviations from Year
+    # Drop unknowns and outliers beyond 3 standard deviations from Year
     if "Year of Record" in data.columns:
         data = data.dropna(subset=["Year of Record"])
         data = data[np.abs(stats.zscore(data["Year of Record"]) < 3)]
 
-    # Drop unkonws from Gender
+    # Drop unknowns from Gender
     if "Gender" in data.columns:
         data = data.dropna(subset=["Gender"])
         data = data = data[data["Gender"].isin(["male", "female", "other"])]
 
-    # Drop unkonws and outliers beyond 3 standard deviations from Age
+    # Drop unknowns and outliers beyond 3 standard deviations from Age
     if "Age" in data.columns:
         data = data.dropna(subset=["Age"])
         data = data[np.abs(stats.zscore(data["Age"]) < 3)]
 
-    # Drop unkonws from Country
+    # Drop unknowns from Country
     if "Country" in data.columns:
         data = data.dropna(subset=["Country"])
 
-    # Drop unkonws and outliers beyond 3 standard deviations from Size of City
+    # Drop unknowns and outliers beyond 3 standard deviations from Size of City
     if "Size of City" in data.columns:
         data = data.dropna(subset=["Size of City"])
         data = data[np.abs(stats.zscore(data["Size of City"]) < 3)]
 
-    # Drop unkonws from Profession
+    # Drop unknowns from Profession
     if "Profession" in data.columns:
         data = data.dropna(subset=["Profession"])
 
-    # Drop unkonws from University Degree
+    # Drop unknowns from University Degree
     if "University Degree" in data.columns:
         data = data.dropna(subset=["University Degree"])
 
-    # Drop unkonws from Wears Glasses
+    # Drop unknowns from Wears Glasses
     if "Wears Glasses" in data.columns:
         data = data.dropna(subset=["Wears Glasses"])
         data = data[data["Wears Glasses"].isin([1, 0])]
 
-    # Drop unkonws from Hair Color
+    # Drop unknowns from Hair Color
     if "Hair Color" in data.columns:
         data = data.dropna(subset=["Hair Color"])
         data = data = data[data["Hair Color"].isin(
             ["Black", "Brown", "Blond", "Red"])]
 
-    # Drop unkonws and outliers beyond 3 standard deviations from Body Height
+    # Drop unknowns and outliers beyond 3 standard deviations from Body Height
     if "Body Height [cm]" in data.columns:
         data = data.dropna(subset=["Body Height [cm]"])
         data = data[np.abs(stats.zscore(data["Body Height [cm]"]) < 3)]
@@ -63,7 +63,7 @@ def remove_outliers(data):
 
 
 def quantify_data(data, train_data):
-    # Replace unkowns in Year of Record with mean and convert to age of record
+    # Replace unknowns in Year of Record with mean and convert to age of record
     if "Year of Record" in data.columns:
         data["Year of Record"] = data["Year of Record"].fillna(
             int(data["Year of Record"].mean()))
@@ -77,7 +77,7 @@ def quantify_data(data, train_data):
         data = pd.concat([data.drop("Gender", axis=1),
                           pd.get_dummies(data[["Gender"]])], axis=1)
 
-    # Replace unkonws in Age with mean
+    # Replace unknowns in Age with mean
     if "Age" in data.columns:
         data["Age"] = data["Age"].fillna(int((data["Age"].mean())))
 
@@ -90,7 +90,7 @@ def quantify_data(data, train_data):
         data = pd.concat([data.drop("Country", axis=1),
                           pd.get_dummies(data[["Country"]])], axis=1)
 
-    # Replace unkowns in Size of City with mean
+    # Replace unknowns in Size of City with mean
     if "Size of City" in data.columns:
         data["Size of City"] = data["Size of City"].fillna(
             int((data["Size of City"].mean())))
@@ -116,7 +116,7 @@ def quantify_data(data, train_data):
         data["University Degree"] = data["University Degree"].replace(
             {"None": 0})
 
-    # Replace unkowns in Wears Glasses with mean
+    # Replace unknowns in Wears Glasses with mean
     if "Wears Glasses" in data.columns:
         data["Wears Glasses"] = data["Wears Glasses"].fillna(
             data["Wears Glasses"].mean())
@@ -131,7 +131,7 @@ def quantify_data(data, train_data):
         data = pd.concat([data.drop("Hair Color", axis=1),
                           pd.get_dummies(data[["Hair Color"]])], axis=1)
 
-    # Replace unkowns in Body Height with mean
+    # Replace unknowns in Body Height with mean
     if "Body Height [cm]" in data.columns:
         data["Body Height [cm]"] = data["Body Height [cm]"].fillna(
             int(data["Body Height [cm]"].mean()))
