@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from scipy import stats
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import Normalizer
 
 
 def remove_outliers(data):
@@ -14,7 +16,7 @@ def remove_outliers(data):
         data = data.dropna(subset=["Year of Record"])
         data = data[np.abs(stats.zscore(data["Year of Record"]) < 3)]
 
-    # Drop unkonws and outliers beyond 3 standard deviations from Gender
+    # Drop unkonws from Gender
     if "Gender" in data.columns:
         data = data.dropna(subset=["Gender"])
         data = data = data[data["Gender"].isin(["male", "female", "other"])]
@@ -134,4 +136,16 @@ def quantify_data(data, train_data):
         data["Body Height [cm]"] = data["Body Height [cm]"].fillna(
             int(data["Body Height [cm]"].mean()))
 
+    return data
+
+
+def standardize_data(data):
+    transformer = StandardScaler()
+    data = transformer.fit_transform(data)
+    return data
+
+
+def normalize_data(data):
+    transformer = Normalizer().fit(data)
+    data = transformer.fit_transform(data)
     return data

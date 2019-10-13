@@ -1,10 +1,13 @@
 import pandas as pd
 from math import sqrt
 from sklearn import linear_model
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
 
-from preprocessing import quantify_data, remove_outliers
+from preprocessing import quantify_data
+from preprocessing import remove_outliers
+from preprocessing import standardize_data
+from preprocessing import normalize_data
 
 # Set to True to enable local testing
 test = True
@@ -25,7 +28,8 @@ if(test):
     train_data, test_data = train_test_split(train_data, test_size=0.2)
 
 # Drop unnecessary columns
-unnecessary = ["Instance"]
+unnecessary = ["Instance", "Size of City",
+               "Wears Glasses", "Hair Color", "Body Height [cm]"]
 train_data = train_data.drop(unnecessary, axis=1)
 test_data = test_data.drop(unnecessary, axis=1)
 
@@ -49,8 +53,16 @@ for column in train_x.columns:
     if column not in test_x.columns:
         test_x[column] = [0] * len(test_y)
 
+# Standardize the datasets
+train_x = standardize_data(train_x)
+test_x = standardize_data(test_x)
+
+# Normalize the datasets
+train_x = normalize_data(train_x)
+test_x = normalize_data(test_x)
+
 # Create linear regression object
-regr = linear_model.LinearRegression()
+regr = linear_model.BayesianRidge()
 
 # Train the model using the training sets
 regr.fit(train_x, train_y)
