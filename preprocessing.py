@@ -62,7 +62,7 @@ def remove_outliers(data):
     return data
 
 
-def quantify_data(data, train_data):
+def quantify_data(data):
     # Replace unknowns in Year of Record with mean and convert to age of record
     if "Year of Record" in data.columns:
         data["Year of Record"] = data["Year of Record"].fillna(
@@ -84,8 +84,6 @@ def quantify_data(data, train_data):
     # Replace Country with One Hot Encoding
     if "Country" in data.columns:
         data["Country"] = data["Country"].fillna("None")
-        allowed_values = train_data["Country"].unique()
-        data.loc[~data["Country"].isin(allowed_values), "Country"] = "None"
         data["Country"] = data["Country"].replace({"None": None})
         data = pd.concat([data.drop("Country", axis=1),
                           pd.get_dummies(data[["Country"]])], axis=1)
@@ -97,9 +95,6 @@ def quantify_data(data, train_data):
 
     # Replace Profession with One Hot Encoding
     if "Profession" in data.columns:
-        allowed_values = train_data["Profession"].unique()
-        data.loc[~data["Profession"].isin(
-            allowed_values), "Profession"] = "None"
         data["Profession"] = data["Profession"].replace({"None": None})
         data = pd.concat([data.drop("Profession", axis=1),
                           pd.get_dummies(data[["Profession"]])], axis=1)
@@ -124,9 +119,6 @@ def quantify_data(data, train_data):
     # Replace Hair Color with One Hot Encoding
     if "Hair Color" in data.columns:
         data["Hair Color"] = data["Hair Color"].fillna("None")
-        allowed_values = train_data["Hair Color"].unique()
-        data.loc[~data["Hair Color"].isin(
-            allowed_values), "Hair Color"] = "None"
         data["Hair Color"] = data["Hair Color"].replace({"None": None})
         data = pd.concat([data.drop("Hair Color", axis=1),
                           pd.get_dummies(data[["Hair Color"]])], axis=1)
