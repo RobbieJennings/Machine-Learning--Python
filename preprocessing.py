@@ -1,6 +1,7 @@
-import numpy as np
 import pandas as pd
+import numpy as np
 from scipy import stats
+from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import Normalizer
 
@@ -128,6 +129,18 @@ def quantify_data(data):
         data["Body Height [cm]"] = data["Body Height [cm]"].fillna(
             int(data["Body Height [cm]"].mean()))
 
+    return data
+
+
+def polynomialize_data(data):
+    transformer = PolynomialFeatures(degree=2)
+    input = data[["Year of Record", "Age", "Size of City", "Body Height [cm]"]]
+    polynomial_data = transformer.fit_transform(input)
+    polynomial_columns = transformer.get_feature_names(input.columns)
+    polynomial_data = pd.DataFrame(polynomial_data, columns=polynomial_columns)
+    polynomial_data = polynomial_data.drop(input.columns, axis=1)
+    data = pd.concat(
+        [data.reset_index(), polynomial_data.reset_index()], axis=1)
     return data
 
 
