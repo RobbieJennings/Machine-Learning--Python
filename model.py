@@ -17,6 +17,18 @@ polynomialize = True
 standardize = True
 normalize = False
 
+# Declare columns to drop from training data
+unnecessary = ["Instance"]
+
+# Create linear regression object
+regr = MLPRegressor(hidden_layer_sizes=(100,),
+                    activation='relu',
+                    solver='adam',
+                    learning_rate='constant',
+                    max_iter=200,
+                    learning_rate_init=0.001,
+                    alpha=0.0001)
+
 # Load the filenames
 train_input = "tcd ml 2019-20 income prediction training (with labels).csv"
 test_input = "tcd ml 2019-20 income prediction test (without labels).csv"
@@ -33,7 +45,6 @@ if(test):
     train_data, test_data = train_test_split(train_data, test_size=0.2)
 
 # Drop unnecessary columns
-unnecessary = ["Instance"]
 train_data = train_data.drop(unnecessary, axis=1)
 test_data = test_data.drop(unnecessary, axis=1)
 
@@ -70,15 +81,6 @@ if(standardize):
 if(normalize):
     train_x = normalize_data(train_x)
     test_x = normalize_data(test_x)
-
-# Create linear regression object
-regr = MLPRegressor(hidden_layer_sizes=(100,),
-                    activation='relu',
-                    solver='adam',
-                    learning_rate='constant',
-                    max_iter=200,
-                    learning_rate_init=0.001,
-                    alpha=0.0001)
 
 # Train the model using the training sets
 regr.fit(train_x, train_y)
