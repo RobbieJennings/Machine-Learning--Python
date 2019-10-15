@@ -11,7 +11,7 @@ from preprocessing import standardize_data
 from preprocessing import normalize_data
 
 # Environment Variables
-test = False
+test = True
 outliers = False
 polynomialize = True
 standardize = True
@@ -72,7 +72,13 @@ if(normalize):
     test_x = normalize_data(test_x)
 
 # Create linear regression object
-regr = MLPRegressor()
+regr = MLPRegressor(hidden_layer_sizes=(100,),
+                    activation='relu',
+                    solver='adam',
+                    learning_rate='constant',
+                    max_iter=200,
+                    learning_rate_init=0.001,
+                    alpha=0.0001)
 
 # Train the model using the training sets
 regr.fit(train_x, train_y)
