@@ -133,8 +133,17 @@ def quantify_data(data):
 
 
 def polynomialize_data(data):
+    input = pd.DataFrame()
+    if("Year of Record" in data.columns):
+        input = pd.concat([input, data[["Year of Record"]]], axis=1)
+    if("Age" in data.columns):
+        input = pd.concat([input, data[["Age"]]], axis=1)
+    if("Size of City" in data.columns):
+        input = pd.concat([input, data[["Size of City"]]], axis=1)
+    if("Body Height [cm]" in data.columns):
+        input = pd.concat([input, data[["Body Height [cm]"]]], axis=1)
+
     transformer = PolynomialFeatures(degree=2)
-    input = data[["Year of Record", "Age", "Size of City", "Body Height [cm]"]]
     polynomial_data = transformer.fit_transform(input)
     polynomial_columns = transformer.get_feature_names(input.columns)
     polynomial_data = pd.DataFrame(polynomial_data, columns=polynomial_columns)
