@@ -25,7 +25,7 @@ regr = MLPRegressor(hidden_layer_sizes=(100,),
                     activation='relu',
                     solver='adam',
                     learning_rate='constant',
-                    max_iter=200,
+                    max_iter=1000,
                     learning_rate_init=0.001,
                     alpha=0.0001)
 
@@ -83,9 +83,8 @@ if(normalize):
     test_x = normalize_data(test_x)
 
 # Train the model using the training sets
+# and make predictions using testing sets
 regr.fit(train_x, train_y)
-
-# Make predictions using the testing set
 pred_y = regr.predict(test_x)
 
 # Save results to file
